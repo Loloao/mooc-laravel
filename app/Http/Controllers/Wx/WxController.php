@@ -9,7 +9,6 @@ use Illuminate\Http\JsonResponse;
 class WxController extends Controller
 {
 
-
     protected function success($data = null)
     {
         return $this->codeReturn(CodeResponse::SUCCESS, $data);
@@ -28,5 +27,13 @@ class WxController extends Controller
     protected function fail(array $codeResponse = CodeResponse::FAIL, $info = ''): JsonResponse
     {
         return $this->codeReturn($codeResponse, null, $info);
+    }
+
+    protected function failOrSuccess($isSuccess, array $codeResponse = CodeResponse::FAIL, $data = null, $info = ''): JsonResponse
+    {
+        if ($isSuccess) {
+            return $this->success($data);
+        }
+        return $this->fail($codeResponse, $info);
     }
 }

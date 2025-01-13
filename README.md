@@ -20,6 +20,7 @@ PSR 4 标准只是在一个特定的目录中定义。可以在根目录下的 c
 下面有很多自定义设置
 
 - `database.php` 数据库连接，邮件服务器，缓存
+- `cors.php` 设置跨域相关参数
 
 ### database
 
@@ -781,7 +782,7 @@ Exception 类通过`report`方法来控制报错
 
 ### Service
 
-可以使用单例模式创建服务，而不需要每次都`new`。
+可以使用单例模式创建服务，而不需要每次都`new`。三私一公两静
 
 ```php
     protect static $instance;
@@ -806,3 +807,8 @@ Exception 类通过`report`方法来控制报错
     {
     }
 ```
+
+## php 调试
+
+断电工作通信时序图
+![img.png](doc/images/debugFlow.png)

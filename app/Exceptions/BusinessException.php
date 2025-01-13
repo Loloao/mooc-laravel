@@ -6,12 +6,11 @@ use App\CodeResponse;
 use Exception;
 use Illuminate\Http\Request;
 
-
 class BusinessException extends Exception
 {
     public function __construct(array $codeResponse = CodeResponse::FAIL, $info = '')
     {
-        list($message, $code) = $codeResponse;
+        list($code, $message) = $codeResponse;
         parent::__construct($info ?: $message, $code);
     }
 
