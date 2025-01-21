@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\AccessToken;
+use App\Models\User\AccessToken;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
 

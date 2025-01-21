@@ -2,13 +2,12 @@
 
 namespace App\Services;
 
-use App\Models\User;
+use App\Models\User\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 class UserServices extends BaseServices
 {
-
 
     public function getByUserName($username)
     {

@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Exceptions\BusinessException;
+
 class BaseServices
 {
     private static $instance;
@@ -15,7 +17,7 @@ class BaseServices
      */
     public static function getInstance()
     {
-        if (static::$instance instanceof static) {
+        if (static::$instance instanceof static ) {
             return static::$instance;
         }
         static::$instance = new static();
@@ -24,5 +26,10 @@ class BaseServices
 
     private function __clone()
     {
+    }
+
+    public function throwBusinessException(array $CodeResponse)
+    {
+        throw new BusinessException($CodeResponse);
     }
 }
