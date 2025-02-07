@@ -1,8 +1,8 @@
 <?php
-
-namespace App\Services;
+namespace App\Services\User;
 
 use App\Models\User\User;
+use App\Services\BaseServices;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 

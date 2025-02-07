@@ -302,6 +302,15 @@ public function scopePopular(Builder $query, $from = null, $to = null): Builder
 Book::when($title, fn($query, $title) => $query->title($title))->get()
 ```
 
+- 当`model`生成时间格式的字段，比如`update_at`、`created_at`时，会调用 model 类中的`serializeDate`方法
+
+```php
+public function serializeDate(DateTimeInterface $date)
+{
+    return Carbon::instance($date)->toDateTimeString();
+}
+```
+
 **[API Resources](https://laravel.com/docs/11.x/eloquent-resources#main-content)**
 Api Resources 主要用于将 Model 数据结构转换成返回给客户端的数据结构，它比 Model 自己的 toJson 提供更健壮和更高颗粒度的应用
 

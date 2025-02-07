@@ -1,8 +1,8 @@
 <?php
-
-namespace App\Services;
+namespace App\Services\Goods;
 
 use App\Models\Goods\Category;
+use App\Services\BaseServices;
 use Illuminate\Database\Eloquent\Collection;
 
 class CatalogServices extends BaseServices
@@ -35,5 +35,19 @@ class CatalogServices extends BaseServices
     public function getL1ListById(int $id)
     {
         return Category::query()->where('level', 'L1')->where('id', $id)->where('deleted', 0)->first();
+    }
+
+    public function getCategory(int $id)
+    {
+        return Category::query()->find($id);
+    }
+
+    public function getL2ListByIds(array $ids)
+    {
+        if (empty($ids)) {
+            return collect([]);
+        }
+
+        return Category::query()->whereIn('id', $ids)->get();
     }
 }

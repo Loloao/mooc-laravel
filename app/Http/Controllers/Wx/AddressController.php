@@ -2,7 +2,7 @@
 namespace App\Http\Controllers\Wx;
 
 use App\CodeResponse;
-use App\Services\AddressServices;
+use App\Services\User\AddressServices;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -19,12 +19,7 @@ class AddressController extends WxController implements HasMiddleware
     {
         $user = Auth::user();
         $list = AddressServices::getInstance()->getAddressListByUserId($user->id);
-        return $this->success([
-            'total' => $list->count(),
-            'page'  => 1,
-            'list'  => $list->toArray(),
-            'pages' => 1,
-        ]);
+        return $this->successPaginate($list);
     }
 
     public function detail(int $id)

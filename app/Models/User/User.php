@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models\User;
 
 use App\Models\BaseModel;
@@ -18,8 +17,6 @@ class User extends BaseModel implements AuthorizableContract, AuthenticatableCon
     use Authenticatable, Authorizable;
     use HasFactory, Notifiable, HasApiTokens;
 
-    public const CREATED_AT = 'add_time';
-    public const UPDATED_AT = 'update_time';
     protected $table = 'user';
     /**
      * The attributes that are mass assignable.

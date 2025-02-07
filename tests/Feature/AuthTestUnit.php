@@ -1,8 +1,7 @@
 <?php
-
 namespace Tests\Feature;
 
-use App\Services\UserServices;
+use App\Services\User\UserServices;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
@@ -30,7 +29,7 @@ class AuthTestUnit extends TestCase
     public function testCheckCaptcha()
     {
         $mobile = '13111111111';
-        $code = (new UserServices())->setCaptcha($mobile);
+        $code   = (new UserServices())->setCaptcha($mobile);
         $isPass = (new UserServices())->checkMobileSendCaptchaCount($mobile, $code);
         $this->assertTrue($isPass);
     }

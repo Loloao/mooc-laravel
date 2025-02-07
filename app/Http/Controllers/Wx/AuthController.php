@@ -1,10 +1,9 @@
 <?php
-
 namespace App\Http\Controllers\Wx;
 
 use App\CodeResponse;
 use App\Models\User\User;
-use App\Services\UserServices;
+use App\Services\User\UserServices;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -28,15 +27,15 @@ class AuthController extends WxController implements HasMiddleware
     {
         $username = $request->input('username');
         $password = $request->input('password');
-        $mobile = $request->input('mobile');
-        $code = $request->input('code');
+        $mobile   = $request->input('mobile');
+        $code     = $request->input('code');
 
         if (empty($username) || empty($password) || empty($mobile) || empty($code)) {
             return $this->fail(CodeResponse::PARAM_ILLEGAL);
         }
 
         $user = UserServices::getInstance()->getByUserName($username);
-        if (!is_null($user)) {
+        if (! is_null($user)) {
             return $this->fail(CodeResponse::AUTH_NAME_REGISTERED);
         }
 
@@ -46,27 +45,27 @@ class AuthController extends WxController implements HasMiddleware
         }
 
         $user = UserServices::getInstance()->getByMobile($mobile);
-        if (!is_null($user)) {
+        if (! is_null($user)) {
             return $this->fail(CodeResponse::AUTH_MOBILE_REGISTERED);
         }
 
-        $user = new User();
-        $user->username = $username;
-        $user->password = Hash::make($password);
-        $user->mobile = $mobile;
-        $user->avatar = 'https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg';
-        $user->nickname = $username;
+        $user                  = new User();
+        $user->username        = $username;
+        $user->password        = Hash::make($password);
+        $user->mobile          = $mobile;
+        $user->avatar          = 'https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg';
+        $user->nickname        = $username;
         $user->last_login_time = Carbon::now()->toDateTimeString();
-        $user->last_login_ip = $request->getClientIp();
+        $user->last_login_ip   = $request->getClientIp();
         $user->save();
 
         // todo 新用户发券
 
         // 返回用户信息和 token
         return $this->success([
-            'token' => '',
+            'token'    => '',
             'userInfo' => [
-                'nickName' => $username,
+                'nickName'  => $username,
                 'avatarUrl' => $user->avatar,
             ],
         ]);
@@ -85,19 +84,19 @@ class AuthController extends WxController implements HasMiddleware
         }
 
         $user = UserServices::getInstance()->getByMobile($mobile);
-        if (!is_null($user)) {
+        if (! is_null($user)) {
             return $this->fail(CodeResponse::AUTH_NAME_REGISTERED);
         }
 
         // 防刷验证，一分钟只能发送一次，redis 锁的实现
         // add 方法如果没保存成功会返回 null
         $lock = Cache::add('register_captcha_lock' . $mobile, 1, 60);
-        if (!$lock) {
+        if (! $lock) {
             return $this->fail(CodeResponse::AUTH_CAPTCHA_FREQUENCY);
         }
 
         $isPass = UserServices::getInstance()->checkMobileSendCaptchaCount($mobile);
-        if (!$isPass) {
+        if (! $isPass) {
             return $this->fail(CodeResponse::AUTH_CAPTCHA_UNSUPPORT);
         }
 
@@ -119,22 +118,22 @@ class AuthController extends WxController implements HasMiddleware
         }
 
         $isPass = Hash::check($password, $user->getAuthPassword());
-        if (!$isPass) {
+        if (! $isPass) {
             return $this->fail(CodeResponse::AUTH_INVALID_ACCOUNT);
         }
 
         $user->last_login_time = now()->toDateTimeString();
-        $user->last_login_ip = $request->getClientIp();
-        if (!$user->save()) {
+        $user->last_login_ip   = $request->getClientIp();
+        if (! $user->save()) {
             return $this->fail(CodeResponse::UPDATED_FAIL);
         }
 
         $token = $user->createToken(name: $username)->plainTextToken;
 
         return $this->success([
-            'token' => $token,
+            'token'    => $token,
             'userInfo' => [
-                'nickName' => $username,
+                'nickName'  => $username,
                 'avatarUrl' => $user->avatar,
             ],
         ]);
@@ -146,9 +145,9 @@ class AuthController extends WxController implements HasMiddleware
         $user = Auth::guard('wx')->user();
         return $this->success([
             'nickName' => $user->nickname,
-            'avatar' => $user->avatar,
-            'gender' => $user->gender,
-            'mobile' => $user->mobile,
+            'avatar'   => $user->avatar,
+            'gender'   => $user->gender,
+            'mobile'   => $user->mobile,
         ]);
     }
 
@@ -166,8 +165,8 @@ class AuthController extends WxController implements HasMiddleware
     public function reset(Request $request)
     {
         $password = $request->input('password');
-        $mobile = $request->input('mobile');
-        $code = $request->input('code');
+        $mobile   = $request->input('mobile');
+        $code     = $request->input('code');
 
         if (empty($password) || empty($mobile) || empty($code)) {
             return $this->fail(CodeResponse::PARAM_ILLEGAL);
@@ -185,7 +184,7 @@ class AuthController extends WxController implements HasMiddleware
         }
 
         $user->password = Hash::make($password);
-        $ret = $user->save();
+        $ret            = $user->save();
         return $this->failOrSuccess($ret, CodeResponse::UPDATED_FAIL);
     }
 
@@ -196,20 +195,20 @@ class AuthController extends WxController implements HasMiddleware
      */
     public function profile(Request $request)
     {
-        $user = Auth::user();
-        $avatar = $request->input("avatar");
-        $gender = $request->input("gender");
+        $user     = Auth::user();
+        $avatar   = $request->input("avatar");
+        $gender   = $request->input("gender");
         $nickname = $request->input("nickname");
 
-        if (!empty($avatar)) {
+        if (! empty($avatar)) {
             $user->avatar = $avatar;
         }
 
-        if (!empty($gender)) {
+        if (! empty($gender)) {
             $user->gender = $gender;
         }
 
-        if (!empty($nickname)) {
+        if (! empty($nickname)) {
             $user->nickname = $nickname;
         }
 
