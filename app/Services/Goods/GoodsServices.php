@@ -1,7 +1,12 @@
 <?php
 namespace App\Services\Goods;
 
+use App\Models\Goods\FootPrint;
 use App\Models\Goods\Goods;
+use App\Models\Goods\GoodsAttribute;
+use App\Models\Goods\GoodsProduct;
+use App\Models\Goods\GoodsSpecification;
+use App\Models\Goods\Issue;
 use App\Services\BaseServices;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 
@@ -42,11 +47,11 @@ class GoodsServices extends BaseServices
             $query = $query->where('brand_id', $brandId);
         }
 
-        if (! empty($isNew)) {
+        if (! is_null($isNew)) {
             $query = $query->where('is_new', $isNew);
         }
 
-        if (! empty($isHot)) {
+        if (! is_null($isHot)) {
             $query = $query->where('is_hot', $isHot);
         }
 
@@ -59,4 +64,38 @@ class GoodsServices extends BaseServices
         return $query;
     }
 
+    public function getGoods(int $id)
+    {
+        return Goods::query()->find($id);
+    }
+
+    public function getGoodsAttribute(int $goodsId)
+    {
+        return GoodsAttribute::query()->where('goods_id', $goodsId)->where('deleted', 0)->get();
+    }
+
+    public function getGoodsSpecification(int $goodsId)
+    {
+        $spec = GoodsSpecification::query()->where('goods_id', $goodsId)->where('deleted', 0)->get()->groupBy('specification');
+        return $spec->map(function ($v, $k) {
+            return ['name' => $k, 'valueList' => $v];
+        });
+    }
+
+    public function getGoodsProduct(int $goodsId)
+    {
+        return GoodsProduct::query()->where('goods_id', $goodsId)->where('deleted', 0)->get();
+    }
+
+    public function getGoodsIssue($page = 1, $limit = 4)
+    {
+        return Issue::query()->forPage($page, $limit)->get();
+    }
+
+    public function saveFootPrint($userId, $goodsId)
+    {
+        $footPrint = new FootPrint();
+        $footPrint = $footPrint->fill(['user_id' => $userId, 'goods_id' => $goodsId]);
+        return $footPrint->save();
+    }
 }

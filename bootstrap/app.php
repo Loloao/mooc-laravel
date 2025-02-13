@@ -7,6 +7,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\ValidationException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -26,5 +27,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (AuthenticationException $e) {
             throw new BusinessException(CodeResponse::UN_LOGIN);
+        });
+        $exceptions->render(function (ValidationException $e) {
+            return response()->json([
+                'errno'  => CodeResponse::PARAM_VALUE_ILLEGAL[0],
+                'errmsg' => CodeResponse::PARAM_VALUE_ILLEGAL[1],
+            ]);
         });
     })->create();

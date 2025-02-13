@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class WxController extends Controller
 {
+    use VerifyRequestInput;
 
     protected function successPaginate($page)
     {
@@ -91,4 +92,5 @@ class WxController extends Controller
     {
         return $this->user()->getAuthIdentifier();
     }
+
 }

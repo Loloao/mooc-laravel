@@ -3,6 +3,9 @@ namespace App\Http\Controllers\Wx;
 
 use App\CodeResponse;
 use App\Constant;
+use App\Services\CollectServices;
+use App\Services\CommentServices;
+use App\Services\Goods\BrandServices;
 use App\Services\Goods\CatalogServices;
 use App\Services\Goods\GoodsServices;
 use App\Services\SearchHistoryServices;
@@ -48,15 +51,16 @@ class GoodsController extends WxController
 
     public function list(Request $request)
     {
-        $categoryId = $request->input('categoryId');
-        $brandId    = $request->input('brandId');
-        $keyword    = $request->input('keyword');
-        $isNew      = $request->input('isNew');
-        $isHot      = $request->input('isHot');
-        $page       = $request->input('page', 1);
-        $limit      = $request->input('limit', 10);
-        $sort       = $request->input('sort', 'add_time');
-        $order      = $request->input('order', 'desc');
+        $categoryId = $this->verifyId('categoryId');
+        $brandId    = $this->verifyId('brandId');
+        $keyword    = $this->verifyString('keyword');
+        $isNew      = $this->verifyBoolean('isNew');
+        $isHot      = $this->verifyBoolean('isHot');
+        $page       = $this->verifyInteger('page', 1);
+        $limit      = $this->verifyInteger('limit', 10);
+        $sort       = $this->verifyEnums('sort', 'add_time', ['add_time', 'retail_price', 'name']);
+        $order      = $this->verifyEnums('order', 'desc', ['desc', 'asc']);
+
         if ($this->isLogin() && ! empty($keyword)) {
             SearchHistoryServices::getInstance()->save($this->userId(), $keyword, Constant::SEARCH_HISTORY_FROM_WX);
         }
@@ -69,6 +73,44 @@ class GoodsController extends WxController
         $goodsList['filterCategoryList'] = $categoryList;
         return $this->success($goodsList);
     }
-    public function detail()
-    {}
+    public function detail(Request $request)
+    {
+        $id = $request->input('id');
+        if (empty($id)) {
+            return $this->fail(CodeResponse::PARAM_ILLEGAL);
+        }
+        $info = GoodsServices::getInstance()->getGoods($id);
+        if (empty($info)) {
+            return $this->fail(CodeResponse::PARAM_VALUE_ILLEGAL);
+        }
+
+        $attr    = GoodsServices::getInstance()->getGoodsAttribute($id);
+        $spec    = GoodsServices::getInstance()->getGoodsSpecification($id);
+        $product = GoodsServices::getInstance()->getGoodsProduct($id);
+        $issue   = GoodsServices::getInstance()->getGoodsIssue();
+        $brand   = $info->brand_id ? BrandServices::getInstance()->getBrand($info->brand_id) : (object) [];
+        $comment = CommentServices::getInstance()->getCommentWithUserInfo($id);
+
+        $userHasCollect = 0;
+        if ($this->isLogin()) {
+            $userHasCollect = CollectServices::getInstance()->countByGoodsId($this->userId(), $id);
+            GoodsServices::getInstance()->saveFootPrint($this->userId(), $id);
+        }
+
+        // todo 团购信息
+        // todo 系统配置
+        return $this->success([
+            'info'              => $info,
+            'userHasCollect'    => $userHasCollect,
+            'issue'             => $issue,
+            'comment'           => $comment,
+            'specificationList' => $spec,
+            'productList'       => $product,
+            'attribute'         => $attr,
+            'brand'             => $brand,
+            'groupon'           => [],
+            'share'             => false,
+            'shareImage'        => $info->share_url,
+        ]);
+    }
 }

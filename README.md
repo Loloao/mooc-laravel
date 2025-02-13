@@ -491,6 +491,8 @@ public function show(Book $book)
 
 controller 的返回值不需要`toArray`，会自动调用`toArray`，我们可以在`model`里重写`toArray`方法来定制返回内容，比如把字段改成驼峰
 
+不要在循环里查询，要把 id 找出来然后一次性批量查询;
+
 ### [Authenticate](https://laravel.com/docs/11.x/authentication#main-content)
 
 logout 时需要通过`invalidate`方法删除 session 文件，`regenerateToken`则需要重新生成一个 session

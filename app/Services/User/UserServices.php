@@ -9,6 +9,14 @@ use Illuminate\Support\Facades\Cache;
 class UserServices extends BaseServices
 {
 
+    public function getUsers(array $userIds)
+    {
+        if (empty($userIds)) {
+            return collect([]);
+        }
+
+        return User::query()->whereIn('id', $userIds)->where('deleted', 0)->get();
+    }
     public function getByUserName($username)
     {
         return User::query()->where('username', $username)->where('deleted', 0)->first();
