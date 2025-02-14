@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Wx;
+namespace App;
 
 use App\Exceptions\BusinessException;
 

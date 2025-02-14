@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Wx;
 
 use App\CodeResponse;
 use App\Constant;
+use App\Inputs\GoodsListInput;
 use App\Services\CollectServices;
 use App\Services\CommentServices;
 use App\Services\Goods\BrandServices;
@@ -51,23 +52,15 @@ class GoodsController extends WxController
 
     public function list(Request $request)
     {
-        $categoryId = $this->verifyId('categoryId');
-        $brandId    = $this->verifyId('brandId');
-        $keyword    = $this->verifyString('keyword');
-        $isNew      = $this->verifyBoolean('isNew');
-        $isHot      = $this->verifyBoolean('isHot');
-        $page       = $this->verifyInteger('page', 1);
-        $limit      = $this->verifyInteger('limit', 10);
-        $sort       = $this->verifyEnums('sort', 'add_time', ['add_time', 'retail_price', 'name']);
-        $order      = $this->verifyEnums('order', 'desc', ['desc', 'asc']);
 
+        $input = GoodsListInput::new ();
         if ($this->isLogin() && ! empty($keyword)) {
             SearchHistoryServices::getInstance()->save($this->userId(), $keyword, Constant::SEARCH_HISTORY_FROM_WX);
         }
 
         $columns      = ['id', 'name', 'brief', 'pic_url', 'is_new', 'is_hot', 'counter_price', 'retail_price'];
-        $goodsList    = GoodsServices::getInstance()->listGoods($categoryId, $brandId, $isNew, $isHot, $keyword, $columns, $sort, $order, $page, $limit);
-        $categoryList = GoodsServices::getInstance()->listL2Category($brandId, $isNew, $isHot, $keyword);
+        $goodsList    = GoodsServices::getInstance()->listGoods($input, $columns);
+        $categoryList = GoodsServices::getInstance()->listL2Category($input);
 
         $goodsList                       = $this->paginate($goodsList);
         $goodsList['filterCategoryList'] = $categoryList;
