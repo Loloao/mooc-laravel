@@ -1,7 +1,7 @@
 <?php
 namespace App\Services;
 
-use App\Constant;
+use App\Enums\Constant;
 use App\Models\Comment;
 use App\Services\User\UserServices;
 use Arr;
@@ -10,7 +10,7 @@ class CommentServices extends BaseServices
 {
     public function getCommentByGoodsId($goodsId, $page = 1, $limit = 2)
     {
-        return Comment::query()->where('value_id', $goodsId)->where('type', Constant::COMMENT_TYPE_GOODS)->where('deleted', 0)->paginate($limit, ['*'], 'page', $page);
+        return Comment::query()->where('value_id', $goodsId)->where('type', Constant::COMMENT_TYPE_GOODS)->paginate($limit, ['*'], 'page', $page);
     }
 
     public function getCommentWithUserInfo($goodsId, $page = 1, $limit = 2)

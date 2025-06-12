@@ -13,13 +13,22 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 
 class GoodsServices extends BaseServices
 {
+
+    public function getGoodsListByIds(array $ids)
+    {
+
+        if (empty($ids)) {
+            return collect();
+        }
+        return Goods::query()->whereIn('id', $ids)->get();
+    }
     /**
      * 获取在售商品数量
      * @return int
      */
     public function countGoodsOnSale()
     {
-        return Goods::query()->where('is_on_sale', 1)->where('deleted', 0)->count('id');
+        return Goods::query()->where('is_on_sale', 1)->count('id');
     }
 
     public function listGoods(GoodsListInput $input, $columns)
@@ -42,7 +51,7 @@ class GoodsServices extends BaseServices
     private function getQueryByGoodsFilter(GoodsListInput $input)
     {
 
-        $query = Goods::query()->where('is_on_sale', 1)->where('deleted', 0);
+        $query = Goods::query()->where('is_on_sale', 1);
 
         if (! empty($input->brandId)) {
             $query = $query->where('brand_id', $input->brandId);
@@ -67,17 +76,18 @@ class GoodsServices extends BaseServices
 
     public function getGoods(int $id)
     {
-        return Goods::query()->find($id);
+        $goods = Goods::query()->find($id);
+        return $goods;
     }
 
     public function getGoodsAttribute(int $goodsId)
     {
-        return GoodsAttribute::query()->where('goods_id', $goodsId)->where('deleted', 0)->get();
+        return GoodsAttribute::query()->where('goods_id', $goodsId)->get();
     }
 
     public function getGoodsSpecification(int $goodsId)
     {
-        $spec = GoodsSpecification::query()->where('goods_id', $goodsId)->where('deleted', 0)->get()->groupBy('specification');
+        $spec = GoodsSpecification::query()->where('goods_id', $goodsId)->get()->groupBy('specification');
         return $spec->map(function ($v, $k) {
             return ['name' => $k, 'valueList' => $v];
         });
@@ -85,7 +95,12 @@ class GoodsServices extends BaseServices
 
     public function getGoodsProduct(int $goodsId)
     {
-        return GoodsProduct::query()->where('goods_id', $goodsId)->where('deleted', 0)->get();
+        return GoodsProduct::query()->where('goods_id', $goodsId)->get();
+    }
+
+    public function getGoodsProductById(int $id)
+    {
+        return GoodsProduct::query()->find($id);
     }
 
     public function getGoodsIssue($page = 1, $limit = 4)

@@ -7,6 +7,33 @@ use App\Services\BaseServices;
 
 class AddressServices extends BaseServices
 {
+    public function getDefaultAddress(int $userId)
+    {
+        return Address::query()->where('user_id', $userId)->where('is_default', 1)->first();
+    }
+
+    /**
+     * 获取地址或者返回默认地址
+     * @param int $userId
+     * @param mixed $addressId
+     * @return Address
+     * @throws \App\Exceptions\BusinessException
+     */
+    public function getAddressOrDefault(int $userId, $addressId = null)
+    {
+
+        if (empty($addressId)) {
+            $address   = AddressServices::getInstance()->getDefaultAddress($userId);
+            $addressId = $address->id ?? 0;
+        } else {
+            $address = AddressServices::getInstance()->getAddress($userId, $addressId);
+            if (empty($address)) {
+                $this->throwBadArgumentValue();
+            }
+        }
+        return $address;
+    }
+
     /**
      * 获取地址列表
      * @param int $userId

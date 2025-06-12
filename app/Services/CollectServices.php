@@ -1,7 +1,7 @@
 <?php
 namespace App\Services;
 
-use App\Constant;
+use App\Enums\Constant;
 use App\Models\Collect;
 
 class CollectServices extends BaseServices

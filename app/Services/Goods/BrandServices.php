@@ -13,7 +13,7 @@ class BrandServices extends BaseServices
 
     public function getBrandList(int $page, int $limit, $sort, $order, $columns = ['*'])
     {
-        $query = Brand::query()->where('deleted', 0);
+        $query = Brand::query();
         if (! empty($sort) && ! empty($order)) {
             $query = $query->orderBy($sort, $order);
         }

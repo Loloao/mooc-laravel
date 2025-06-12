@@ -17,7 +17,12 @@ class WxController extends Controller
     {
         return $this->success($this->paginate($page));
     }
-    protected function paginate($page)
+    /**
+     * @param LengthAwarePaginator|array $page
+     * @param null|array $list
+     * @return array
+     */
+    protected function paginate($page, $list = null)
     {
         if ($page instanceof LengthAwarePaginator) {
             return [
@@ -25,7 +30,7 @@ class WxController extends Controller
                 'page'  => $page->currentPage(),
                 'limit' => $page->perPage(),
                 'pages' => $page->lastPage(),
-                "list"  => $page->items(),
+                "list"  => $list ?? $page->items(),
             ];
         }
         if ($page instanceof Collection) {
@@ -94,4 +99,21 @@ class WxController extends Controller
         return $this->user()->getAuthIdentifier();
     }
 
+    /**
+     * 401
+     * @return JsonResponse
+     */
+    public function badArgument()
+    {
+        return $this->fail(CodeResponse::PARAM_ILLEGAL);
+    }
+
+    /**
+     * 402
+     * @return JsonResponse
+     */
+    public function badArgumentValue()
+    {
+        return $this->fail(CodeResponse::PARAM_VALUE_ILLEGAL);
+    }
 }

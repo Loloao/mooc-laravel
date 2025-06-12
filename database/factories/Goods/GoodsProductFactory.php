@@ -1,0 +1,45 @@
+<?php
+namespace Database\Factories\Goods;
+
+use App\Models\Goods\Goods;
+use App\Models\Goods\GoodsProduct;
+use App\Models\Goods\GoodsSpecification;
+use App\Models\Promotion\GrouponRules;
+use App\Services\Goods\GoodsServices;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User\User>
+ */
+class GoodsProductFactory extends Factory
+{
+
+    public function definition()
+    {
+
+        $goods = Goods::factory()->create();
+        $spec  = GoodsSpecification::factory()->create(['goods_id' => $goods->id]);
+        return [
+            'goods_id'       => $goods->id,
+            'specifications' => json_encode([$spec->value]),
+            'price'          => 999,
+            'number'         => 100,
+            'url'            => fake()->imageUrl(),
+        ];
+    }
+
+    public function groupon()
+    {
+        return $this->state(function () {
+            return [];
+        })->afterCreating(function (GoodsProduct $product) {
+            $goods = GoodsServices::getInstance()->getGoods($product->goods_id);
+            GrouponRules::factory()->create([
+                'goods_id'   => $product->goods_id,
+                'goods_name' => $goods->name,
+                'pic_url'    => $goods->pic_url,
+                'discount'   => 10,
+            ]);
+        });
+    }
+}

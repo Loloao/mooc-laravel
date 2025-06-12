@@ -1,7 +1,7 @@
 <?php
-
 namespace App\Services;
 
+use App\CodeResponse;
 use App\Exceptions\BusinessException;
 
 class BaseServices
@@ -28,8 +28,18 @@ class BaseServices
     {
     }
 
-    public function throwBusinessException(array $CodeResponse)
+    /**
+     * @param array $CodeResponse
+     * @param mixed $info
+     * @throws \App\Exceptions\BusinessException
+     */
+    public function throwBusinessException(array $CodeResponse, $info = '')
     {
-        throw new BusinessException($CodeResponse);
+        throw new BusinessException($CodeResponse, $info);
+    }
+
+    public function throwBadArgumentValue()
+    {
+        $this->throwBusinessException(CodeResponse::PARAM_VALUE_ILLEGAL);
     }
 }

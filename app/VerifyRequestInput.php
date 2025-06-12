@@ -2,6 +2,8 @@
 namespace App;
 
 use App\Exceptions\BusinessException;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 trait VerifyRequestInput
 {
@@ -15,7 +17,7 @@ trait VerifyRequestInput
      */
     public function verifyId($key, $default = null)
     {
-        return $this->verifyData($key, $default, 'integer|digits_between:1,20');
+        return $this->verifyData($key, $default, 'integer|digits_between:1,20|min:1');
     }
     /**
      * 验证字符串
@@ -53,9 +55,31 @@ trait VerifyRequestInput
         return $this->verifyData($key, $default, 'integer');
     }
 
+    /**
+     * @param mixed $key
+     * @param mixed $default
+     * @return mixed
+     * @throws BusinessException
+     */
+    public function verifyPositiveInteger($key, $default = null)
+    {
+        return $this->verifyData($key, $default, 'integer|min:1');
+    }
+
     public function verifyEnums($key, $default = null, $enum)
     {
         return $this->verifyData($key, $default, Rule::in($enum));
+    }
+
+    /**
+     * 验证数组非空
+     * @param mixed $key
+     * @param mixed null $default
+     * @throws BusinessException
+     */
+    public function verifyArrayNotEmpty($key, $default = null, )
+    {
+        return $this->verifyData($key, $default, 'array|min:1');
     }
 
     /**
@@ -78,4 +102,5 @@ trait VerifyRequestInput
         }
         return $value;
     }
+
 }

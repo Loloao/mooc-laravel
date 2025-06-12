@@ -34,4 +34,5 @@ return Application::configure(basePath: dirname(__DIR__))
                 'errmsg' => CodeResponse::PARAM_VALUE_ILLEGAL[1],
             ]);
         });
-    })->create();
+    })
+    ->create();

@@ -15,16 +15,16 @@ class UserServices extends BaseServices
             return collect([]);
         }
 
-        return User::query()->whereIn('id', $userIds)->where('deleted', 0)->get();
+        return User::query()->whereIn('id', $userIds)->get();
     }
     public function getByUserName($username)
     {
-        return User::query()->where('username', $username)->where('deleted', 0)->first();
+        return User::query()->where('username', $username)->first();
     }
 
     public function getByMobile($mobile)
     {
-        return User::query()->where('mobile', $mobile)->where('deleted', 0)->first();
+        return User::query()->where('mobile', $mobile)->first();
     }
 
     /**

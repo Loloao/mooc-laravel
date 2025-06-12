@@ -56,6 +56,9 @@ PSR 4 标准只是在一个特定的目录中定义。可以在根目录下的 c
 
 测试目录，包含应用程序测试套件，包括单元和特性测试
 
+测试文件里的`setUp`方法会在执行测试用例前调用一次
+测试文件里的`tearDown`方法会在执行测试用例后调用一次
+
 ### vendor
 
 由 composer 管理，不应该修改这个目录中的任何东西
@@ -468,6 +471,8 @@ $this->middle('throttle:60,1')->only(['store', 'only', 'destroy']);
 
 controller 类中的`__invoke`方法可以让路由只简单调用类，而不是调用方法
 
+控制器的方法可以随便调用控制器内的方法，但是不能调用其他控制器的方法
+
 **[Resource Controllers](https://laravel.com/docs/11.x/controllers#resource-controllers)**
 Laravel resource routing assigns the typical create, read, update, and delete ("CRUD") routes to a controller with a
 single line of code.
@@ -760,7 +765,16 @@ $collection->combine(['v1', 'v2'])
 门面为服务容器提供了一个静态接口，实际上是服务容器中底层类的静态代理，所有的`Facades`都定义在`Illuminate\Support\Facades`
 命名空间下
 
-可以给类和方法做注释来获得代码提示
+可以给类和方法做注释来获得代码提示 
+    - ide提示，使用`laravel-ide-helper`包
+        1.`php artisan ide-helper:generate`生成能跳转到源码的一个注释文件
+        2.`php artisan ide-helper:models -RW`在 model 里生成能提示 model 属性的注释
+        3.`php artisan ide-helper:meta`当使用`app('files')`这种代码时，能够直接跳到对应源码
+    - 如果碰见`mixed`混合类型，可以通过`@var`强制指定类型
+    ```php
+    /** @var Coupon $coupon **/
+    $coupon = ...;
+    ```
 
 ### [Test](https://laravel.com/docs/11.x/testing#main-content)
 
@@ -825,3 +839,4 @@ Exception 类通过`report`方法来控制报错
 
 断电工作通信时序图
 ![img.png](doc/images/debugFlow.png)
+
